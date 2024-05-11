@@ -3,7 +3,7 @@
 import { UploadButton } from "@/lib/uploadthing"
 import type { ElementsType, FormElement } from "../FormElements";
 import { MdFileUpload } from "react-icons/md";
-import { SubmitForm, UploadPdfForm } from "@/actions/form";
+import { UploadPdfForm } from "@/actions/form";
 import { usePathname } from "next/navigation";
 import { toast } from "../ui/use-toast";
 
