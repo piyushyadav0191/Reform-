@@ -8,8 +8,8 @@ import { FaWpforms } from "react-icons/fa";
 import { HiCursorClick } from "react-icons/hi";
 import { TbArrowBounce } from "react-icons/tb";
 import { ElementsType, FormElementInstance } from "@/components/FormElements";
-import {  TableCell,} from "@/components/ui/table";
-import { format,  } from "date-fns";
+import {  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import { format, formatDistance,  } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -114,11 +114,12 @@ async function SubmissionsTable({ id }: { id: number }) {
     required: boolean;
     type: ElementsType;
   }[] = [];
-
-  // biome-ignore lint/complexity/noForEach: <explanation>
+console.log(formElements, "form elements")
   formElements.forEach((element) => {
+    console.log(element, "element")
     switch (element.type) {
       case "TextField":
+      case "TitleField":
       case "NumberField":
       case "TextAreaField":
       case "DateField":
@@ -127,7 +128,7 @@ async function SubmissionsTable({ id }: { id: number }) {
       case "CheckboxField":
         columns.push({
           id: element.id,
-          label: element.extraAttributes?.label ?? "Untitled" ,
+          label: element.extraAttributes?.title ?? element.extraAttributes?.label,
           required: element.extraAttributes?.required,
           type: element.type,
         });
@@ -143,7 +144,7 @@ type Row = {
 }
 
   const rows: Row[] = [];
-  // biome-ignore lint/complexity/noForEach: <explanation>
+
   form.FormSubmissions.forEach((submission) => {
     console.log(submission.content, "form submition row")
     const content = typeof submission.content === "string" ? `${submission.content}` : JSON.parse(submission.content);
@@ -153,20 +154,10 @@ type Row = {
     });
   });
 
-    console.log(rows)
 
   return (
     <>
-<div className="grid grid-cols-2 gap-4">
-      {rows.map((row, index) => (
-        <div key={index} className="border p-4">
-          <div className="font-bold">{Object.values(row).slice(0, -1).join('')}</div>
-          <div>{row.submittedAt.toDateString()}</div>
-        </div>
-      ))}
-    </div>
-
-      {/* <h1 className="text-2xl font-bold my-4">Submissions</h1>
+      <h1 className="text-2xl font-bold my-4">Submissions</h1>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -180,22 +171,28 @@ type Row = {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-<TableRow key={index}>
-                {columns.map((column) => (
-                  <RowCell key={column.id} type={column.type} value={row[Number(column.id)]} />
+          {rows.map((row, index) => {
+    const contentValue = Object.values(row).slice(0, -1).join('').replace(/[\[\]{}"']/g, '');
+    if (contentValue.length !== 0) {
+        return (
+            <TableRow key={index}>
+                {columns.map((col) => (
+                    <RowCell key={col.id} type={col.type} value={contentValue} />
                 ))}
                 <TableCell className="text-muted-foreground text-right">
-                  {formatDistance(row.submittedAt, new Date(), {
-                    addSuffix: true,
-                  })}
+                    {formatDistance(row.submittedAt, new Date(), {
+                        addSuffix: true,
+                    })}
                 </TableCell>
-              </TableRow>
-            ))}
+            </TableRow>
+        );
+    } else {
+        return null; 
+    }
+})}
           </TableBody>
         </Table>
-      </div> */}
+      </div>
     </>
   );
 }
@@ -213,6 +210,10 @@ function RowCell({ type, value }: { type: ElementsType; value: string }) {
       const checked = value === "true";
       node = <Checkbox checked={checked} disabled />;
       break;
+      case "UploadButtonField":
+        node = value.length !== 0 && <a href={value} className="font-bold" target="_blank" rel="noreferrer">Download</a>;
+        break;
+        
   }
 
   return <TableCell>{node}</TableCell>;

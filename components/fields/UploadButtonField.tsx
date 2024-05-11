@@ -3,7 +3,7 @@
 import { UploadButton } from "@/lib/uploadthing"
 import type { ElementsType, FormElement } from "../FormElements";
 import { MdFileUpload } from "react-icons/md";
-import { SubmitForm } from "@/actions/form";
+import { SubmitForm, UploadPdfForm } from "@/actions/form";
 import { usePathname } from "next/navigation";
 import { toast } from "../ui/use-toast";
 
@@ -28,7 +28,7 @@ export const UploadButtonFormElement: FormElement = {
   },
   formComponent: UploadFieldComponent,
   propertiesComponent: ({ elementInstance }) => {
-    return <div>{elementInstance.id}</div>;
+    return <div>Upload Pdf</div>;
   },
   validate: () => true
 }
@@ -38,9 +38,7 @@ function UploadFieldComponent() {
   return <UploadButton
       endpoint="pdfUploader"
       onClientUploadComplete={async(res) => {
-        // Do something with the response
-        console.log(!!res && res.map((r) => r.url))
-          await SubmitForm(pathname.split("/")[2], JSON.stringify(!!res && res.map((r) => r.url)))
+          await UploadPdfForm(pathname.split("/")[2], JSON.stringify(!!res && res.map((r) => r.url)))
        toast({title: "Upload complete"})
       }}
       onUploadError={(error: Error) => {

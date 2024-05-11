@@ -168,6 +168,22 @@ export async function SubmitForm(formUrl: string, content: string) {
   });
 }
 
+export async function UploadPdfForm(formUrl: string, content: string) {
+  return await prisma.form.update({
+    data: {
+      FormSubmissions: {
+        create: {
+          content,
+        },
+      },
+    },
+    where: {
+      shareURL: formUrl,
+      published: true,
+    },
+  });
+}
+
 export async function GetFormWithSubmissions(id: number) {
   const user = await currentUser();
   if (!user) {
