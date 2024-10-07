@@ -11,6 +11,8 @@ Create and share form easily with beautiful webflow prototype feature
 - Tailwindcss / Shadcn UI
 - Vercel PostgreSQL
 - Prisma as ORM
+- Uploadthing
+- Clerk
 
 ## Features:
 
